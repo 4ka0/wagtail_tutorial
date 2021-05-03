@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% load wagtailcore_tags %}
+
+{% block content %}
+
+    <!-- Back link  -->
+
+    <p><a href="{% slugurl 'blog' %}">Return to blog index page</a></p>
+
+    <!-- Tag list -->
+
+    <h1>Tags</h1>
+
+    {% if request.GET.tag|length %}
+        <h3>Showing pages tagged "{{ request.GET.tag }}"</h3>
+    {% endif %}
+
+    {% for blogpage in blogpages %}
+
+        <h3><a href="{% pageurl blogpage %}">{{ blogpage.title }}</a></h3>
+        <p>Last updated: {{ blogpage.latest_revision_created_at }}</p>
+        {% if blogpage.author %}
+            <p>By {{ blogpage.author.profile }}</p>
+        {% endif %}
+
+    {% empty %}
+        No pages found with that tag.
+    {% endfor %}
+
+{% endblock %}
