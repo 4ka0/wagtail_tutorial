@@ -21,14 +21,22 @@
 
     <p class="meta">{{ page.date }}</p>
 
+    {% if page.categories.all %}
+        <p>
+            Categories:
+            {% for category in page.categories.all %}
+                {% image category.icon fill-24x24 style="vertical-align: middle" %}
+                {{ category.name }}
+            {% endfor %}
+        </p>
+    {% endif %}
+
     {% if page.tags.all.count %}
         <p>
-            <div class="tags">
-                Tags:
-                {% for tag in page.tags.all %}
-                    <a href="{% slugurl 'tags' %}?tag={{ tag }}"><button type="button">{{ tag }}</button></a>
-                {% endfor %}
-            </div>
+            Tags:
+            {% for tag in page.tags.all %}
+                <a href="{% slugurl 'tags' %}?tag={{ tag }}"><button type="button">{{ tag }}</button></a>
+            {% endfor %}
         </p>
     {% endif %}
 
