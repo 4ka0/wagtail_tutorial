@@ -6,9 +6,14 @@
 
 {% block content %}
 
-    <!-- Back link  -->
+    <!-- Nav links -->
 
-    <p><a href="{{ page.get_parent.url }}">Return to blog index page</a></p>
+    <p>
+        <a href="{% slugurl 'home' %}">Homepage</a>
+        &nbsp;>&nbsp;
+        <a href="{{ page.get_parent.url }}">Blog</a>
+        &nbsp;>&nbsp;{{ page.title }}
+    </p>
 
     <!-- Page meta  -->
 

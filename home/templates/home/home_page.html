@@ -5,12 +5,11 @@
 {% block body_class %}template-homepage{% endblock %}
 
 {% block content %}
+
     <h1>{{ page.title }}</h1>
 
-    {{ page.body|richtext }}
+    <p>{{ page.body|richtext }}</p>
 
-    {% for child in page.get_children %}
-        <h3><a href="{% pageurl child %}">{{ child.title }}</a></h3>
-    {% endfor %}
+    <h3><a href="{% slugurl 'blog' %}">Blog</a></h3>
 
 {% endblock content %}

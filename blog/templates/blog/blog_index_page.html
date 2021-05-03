@@ -6,7 +6,10 @@
 
 {% block content %}
 
-    <p><a href="{{ page.get_parent.url }}">Return to homepage</a></p>
+    <p>
+        <a href="{{ page.get_parent.url }}">Homepage</a>
+        &nbsp;>&nbsp;{{ page.title }}
+    </p>
 
     <h1>{{ page.title }}</h1>
 

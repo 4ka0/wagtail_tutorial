@@ -54,11 +54,27 @@ class BlogPage(Page):
     tags = ClusterTaggableManager(through=BlogPageTag, blank=True)
 
     def main_image(self):
+        '''
+        Returns the first image for a given blog page.
+        '''
         gallery_item = self.gallery_images.first()
         if gallery_item:
             return gallery_item.image
         else:
             return None
+
+    def get_tags(self):
+        '''
+        Returns all tags for given blog page.
+        '''
+        tags = self.tags.all()
+        for tag in tags:
+            tag.url = '/' + '/'.join(s.strip('/') for s in [
+                self.get_parent().url,
+                'tags',
+                tag.slug
+            ])
+        return tags
 
     search_fields = Page.search_fields + [
         index.SearchField('intro'),
@@ -105,11 +121,24 @@ class BlogPageGalleryImage(Orderable):
 
 class BlogTagIndexPage(Page):
 
+    def get_all_tags(self):
+        tags = []
+        blogpages = BlogPage.objects.live()
+        for page in blogpages:
+            tags += page.get_tags()
+        tags = sorted(set(tags))
+
     def get_context(self, request):
-        # Filter by tag
         tag = request.GET.get('tag')
-        blogpages = BlogPage.objects.filter(tags__name=tag)
-        # Update template context
-        context = super().get_context(request)
-        context['blogpages'] = blogpages
-        return context
+        if tag:
+            # Filter blog posts by tag and add to context
+            blogpages = BlogPage.objects.filter(tags__name=tag)
+            context = super().get_context(request)
+            context['blogpages'] = blogpages
+            return context
+        else:
+            # Add all available tags to context
+            blogpages = BlogPage.objects.all()
+            context = super().get_context(request)
+            context['tags'] = self.get_all_tags()
+            return context
