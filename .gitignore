@@ -1,0 +1,9 @@
+.DS_Store
+.vscode/
+.coverage
+.env
+__pycache__/
+env/
+media/
+htmlcov/
+db.sqlite3
