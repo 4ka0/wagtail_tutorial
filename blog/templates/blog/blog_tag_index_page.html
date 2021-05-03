@@ -19,9 +19,6 @@
 
         <h3><a href="{% pageurl blogpage %}">{{ blogpage.title }}</a></h3>
         <p>Last updated: {{ blogpage.latest_revision_created_at }}</p>
-        {% if blogpage.author %}
-            <p>By {{ blogpage.author.profile }}</p>
-        {% endif %}
 
     {% empty %}
         No pages found with that tag.
