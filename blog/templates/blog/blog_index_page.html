@@ -7,24 +7,39 @@
 {% block content %}
 
     <p>
-        <a href="{{ page.get_parent.url }}">Homepage</a>
+        <a href="{{ page.get_parent.url }}">Home</a>
         &nbsp;>&nbsp;{{ page.title }}
     </p>
 
-    <h1>{{ page.title }}</h1>
+    <div class="row d-flex justify-content-center">
 
-    <div class="intro">{{ page.intro|richtext }}</div>
+        <h1 class="text-center">{{ page.title }}</h1>
 
-    {% for post in blogpages %}
-        {% with post=post.specific %}
-            <hr>
-            <h3><a href="{% pageurl post %}">{{ post.title }}</a></h3>
-            <p>{{ post.date }}</p>
-            <p>{{ post.intro }}</p>
-            {% if post.main_image %}
-                {% image post.main_image fill-160x100 %}
-            {% endif %}
-        {% endwith %}
-    {% endfor %}
+        <div class="intro text-center">{{ page.intro|richtext }}</div>
+
+        {% for post in blogpages %}
+            {% with post=post.specific %}
+
+                <div class="card mt-5 py-3" style="max-width: 540px;">
+                    <div class="row g-0">
+                        <div class="col-md-4 px-3 py-3">
+                            {% if post.main_image %}
+                                <a href="{% pageurl post %}">{% image post.main_image fill-160x100 %}</a>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-8">
+                            <div class="card-body">
+                            <h5 class="card-title"><a href="{% pageurl post %}">{{ post.title }}</a></h5>
+                            <p class="card-text text-muted">{{ post.date }}</p>
+                            <p class="card-text">{{ post.intro }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            {% endwith %}
+        {% endfor %}
+
+    </div>
 
 {% endblock %}
