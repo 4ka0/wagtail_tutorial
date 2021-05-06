@@ -1,0 +1,11 @@
+{% load menu_tags %}
+
+<nav class="navbar border bg-light justify-content-center">
+    <ul class="nav">
+        {% for item in menu_items %}
+            <li class="nav-item {{ item.active_class }}">
+                <a class="nav-link active" aria-current="page" href="{{ item.href }}">{{ item.text }}</a>
+            </li>
+        {% endfor %}
+    </ul>
+</nav>

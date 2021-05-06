@@ -1,5 +1,9 @@
 {% load static wagtailuserbar %}
 
+{% load menu_tags %}
+
+{% load wagtailcore_tags footer %}
+
 <!DOCTYPE html>
 <html class="no-js" lang="en">
     <head>
@@ -30,15 +34,23 @@
     <body class="{% block body_class %}{% endblock %}">
         {% wagtailuserbar %}
 
-        <!-- Main content -->
-        <div class="container">
+        <!-- Navigation bar -->
+        {% main_menu template="main_menu.html" %}
+
+        <!-- Main body -->
+        <div class="container-fluid">
             <div class="row justify-content-center">
-                <div class="col-sm-9 bg-light p-5 my-5 border">
+                <div class="col-sm-8 my-5">
+
+                    <!-- Content -->
                     {% block content %}
                     {% endblock content %}
+
                 </div>
             </div>
         </div>
+
+        {% footer %}
 
         {# Global javascript #}
         <script type="text/javascript" src="{% static 'js/mysite.js' %}"></script>

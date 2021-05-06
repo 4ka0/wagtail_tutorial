@@ -1,15 +1,20 @@
 {% extends "base.html" %}
 
-{% load wagtailcore_tags %}
+{% load wagtailcore_tags wagtailimages_tags %}
 
 {% block body_class %}template-homepage{% endblock %}
 
 {% block content %}
 
-    <h1>{{ page.title }}</h1>
+    <div class="text-center p-5">
 
-    <p>{{ page.body|richtext }}</p>
+        {% for item in page.gallery_images.all %}
+            {% image item.image max-200x200 class="profile-image" %}
+        {% endfor %}
 
-    <h3><a href="{% slugurl 'blog' %}">Blog</a></h3>
+        <h1 class="pt-3 fw-bold">{{ page.name }}</h1>
+        <h3 class="pt-1">{{ page.intro|richtext }}</h3>
+
+    </div>
 
 {% endblock content %}

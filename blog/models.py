@@ -51,23 +51,12 @@ class BlogPageTag(TaggedItemBase):
 
 class BlogPage(Page):
     date = models.DateField('Post date')
-    intro = models.CharField(max_length=250)
     body = RichTextField(blank=True)
     tags = ClusterTaggableManager(through=BlogPageTag, blank=True)
     categories = ParentalManyToManyField('blog.BlogCategory', blank=True)
 
-    def main_image(self):
-        '''
-        Returns the first image for a given blog page.
-        '''
-        gallery_item = self.gallery_images.first()
-        if gallery_item:
-            return gallery_item.image
-        else:
-            return None
-
+    # Set as a searchable field
     search_fields = Page.search_fields + [
-        index.SearchField('intro'),
         index.SearchField('body'),
     ]
 
@@ -79,10 +68,19 @@ class BlogPage(Page):
             FieldPanel('tags'),
             FieldPanel('categories', widget=forms.CheckboxSelectMultiple),
         ], heading='Blog information'),
-        FieldPanel('intro'),
         FieldPanel('body'),
         InlinePanel('gallery_images', label='Gallery images'),
     ]
+
+    def main_image(self):
+        '''
+        Returns the first image for a given blog page.
+        '''
+        gallery_item = self.gallery_images.first()
+        if gallery_item:
+            return gallery_item.image
+        else:
+            return None
 
 
 class BlogPageGalleryImage(Orderable):
