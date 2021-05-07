@@ -1,30 +1,47 @@
 {% extends "base.html" %}
-{% load wagtailcore_tags %}
+
+{% load wagtailcore_tags wagtailimages_tags %}
 
 {% block content %}
 
-    <!-- Nav links  -->
+<div class="row d-flex justify-content-center mb-5">
 
-    <p>
-        <a href="{% slugurl 'home' %}">Home</a>
-        &nbsp;>&nbsp;
-        <a href="{% slugurl 'blog' %}">Blog</a>
-        &nbsp;>&nbsp;{{ page.title }}
-    </p>
+    <div class="col-8">
 
-    <!-- Tag list -->
+        {% if request.GET.tag|length %}
+            <h3 class="text-center pb-5">Posts tagged "{{ request.GET.tag|capfirst }}"</h3>
+        {% endif %}
 
-    <h1>Blog Tags</h1>
+        <!-- Post listing -->
 
-    {% if request.GET.tag|length %}
-        <h3>Showing pages tagged "{{ request.GET.tag }}"</h3>
-    {% endif %}
+        {% for post in posts %}
 
-    {% for blogpage in blogpages %}
+            <div class="row mb-4">
 
-        <h3><a href="{% pageurl blogpage %}">{{ blogpage.title }}</a></h3>
-        <p>Last updated: {{ blogpage.latest_revision_created_at }}</p>
+                <div class="col-3 pl-5">
+                    {% if post.main_image %}
+                        <a href="{% pageurl post %}">{% image post.main_image fill-100x100 class="blog-list-image" %}</a>
+                    {% endif %}
+                </div>
 
-    {% endfor %}
+                <div class="col">
+
+                    <h4><a href="{% pageurl post %}">{{ post.title }}</a></h4>
+
+                    <div class="text-muted"><small>{{ post.date }}</small></div>
+
+                    {% with body=post.body|richtext %}
+                        {{ body|truncatechars:95 }}
+                    {% endwith %}
+
+                </div>
+
+            </div>
+
+        {% endfor %}
+
+    </div>
+
+</div>
 
 {% endblock %}

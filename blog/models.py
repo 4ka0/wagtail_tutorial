@@ -29,10 +29,9 @@ class BlogIndexPage(Page):
         Overrides the default get_context() such that the context dictionary
         includes published posts in reverse chronological order.
         '''
-        context = super().get_context(request)
         all_posts = self.get_children().live().order_by('-first_published_at')
 
-        paginator = Paginator(all_posts, 4)
+        paginator = Paginator(all_posts, 5)
         page = request.GET.get('page')
 
         try:
@@ -45,14 +44,15 @@ class BlogIndexPage(Page):
             # If page=x is out of range: return the last page
             posts = paginator.page(paginator.num_pages)
 
+        context = super().get_context(request)
         context['posts'] = posts
         return context
 
 
 class BlogPageTag(TaggedItemBase):
     '''
-    Model for tags that can be attached to a blog entry. Has to be defined
-    prior to the BlogPage model.
+    Model for tags that can be attached to a blog entry.
+    Has to be defined prior to the BlogPage model.
     '''
 
     # ParentalKey is similar to ForeignKey in that it attaches this model to
@@ -127,11 +127,9 @@ class BlogTagIndexPage(Page):
 
     def get_context(self, request):
         tag = request.GET.get('tag')
-        # Filter blog posts by tag and add to context
-        blogpages = BlogPage.objects.filter(tags__name=tag)
-        # Update context
+        posts = BlogPage.objects.live().filter(tags__name=tag).order_by('-first_published_at')
         context = super().get_context(request)
-        context['blogpages'] = blogpages
+        context['posts'] = posts
         return context
 
 
