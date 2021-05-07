@@ -15,6 +15,13 @@
         <h1 class="pt-3 fw-bold">{{ page.name }}</h1>
         <h3 class="pt-1">{{ page.intro|richtext }}</h3>
 
+        <div class="social links pt-2">
+            {% for link in page.social_links.all %}
+                <a href="{{ link.link_url }}">{% image link.icon width-30 style="vertical-align: middle" %}</a>
+                &nbsp;&nbsp;
+            {% endfor %}
+        </div>
+
     </div>
 
 {% endblock content %}
