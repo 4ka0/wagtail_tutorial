@@ -26,10 +26,20 @@ a:link {
 }
 
 .blog-list-image {
-    border-radius: 10%;
     display: block;
+    border-radius: 10%;
     margin: auto;
     margin-top: 6px;
+}
+
+.blog-page-image-block {
+    display: block;
+    margin: auto;
+    text-align: center;
+}
+
+.blog-page-image {
+    border-radius: 2%;
 }
 
 .footer {
