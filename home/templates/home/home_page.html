@@ -13,7 +13,7 @@
         {% endfor %}
 
         <h1 class="pt-3 fw-bold">{{ page.name }}</h1>
-        <h3 class="pt-1">{{ page.intro|richtext }}</h3>
+        <h5 class="pt-1">{{ page.intro|richtext }}</h5>
 
         <div class="social links pt-2">
             {% for link in page.social_links.all %}
