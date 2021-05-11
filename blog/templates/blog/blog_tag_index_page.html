@@ -30,7 +30,7 @@
 
                     <div class="text-muted"><small>{{ post.date }}</small></div>
 
-                    {% with body=post.body|richtext %}
+                    {% with body=post.body %}
                         {{ body|truncatechars:95 }}
                     {% endwith %}
 

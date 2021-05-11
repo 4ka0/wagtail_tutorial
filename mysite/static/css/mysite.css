@@ -30,6 +30,7 @@ a:link {
     border-radius: 10%;
     margin: auto;
     margin-top: 6px;
+    margin-left: 140px;
 }
 
 .blog-page-image-block {
@@ -40,6 +41,9 @@ a:link {
 
 .blog-page-image {
     border-radius: 2%;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .footer {

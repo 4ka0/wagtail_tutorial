@@ -39,7 +39,8 @@
                             <a href="{% slugurl 'tags' %}?tag={{ tag }}">
                                 <button type="button" class="btn btn-outline-primary btn-sm">
                                     {{ tag|capfirst }}
-                                </button></a>
+                                </button>
+                            </a>
                         {% endfor %}
                     </p>
                 {% endif %}
@@ -49,28 +50,24 @@
             <!-- Page text  -->
 
             <div class="lh-lg pb-3 text-justify">
-                {{ page.body|richtext }}
+
+                {% for block in page.body %}
+
+                    {% if block.block_type == 'heading' %}
+                        <h5>{{ block.value }}</h5>
+                    {% endif %}
+
+                    {% if block.block_type == 'paragraph' %}
+                        <p>{{ block.value|richtext }}</p>
+                    {% endif %}
+
+                    {% if block.block_type == 'image' %}
+                        {% image block.value width-400 class="blog-page-image border mb-4" %}
+                    {% endif %}
+
+                {% endfor %}
+
             </div>
-
-            <!-- Page images -->
-
-            <div class="row pb-3">
-                <div class="col">
-                    <div class="blog-page-image-block">
-
-                    {% for item in page.gallery_images.all %}
-
-                        {% image item.image width-400 class="blog-page-image border" %}
-
-                        <p class="text-center text-muted p-2">{{ item.caption}}</p>
-
-                    {% endfor %}
-
-                    </div>
-
-                </div>
-            </div>
-
         </div>
     </div>
 

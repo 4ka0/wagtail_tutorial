@@ -5,16 +5,19 @@ from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from modelcluster.fields import ParentalKey, ParentalManyToManyField
 from modelcluster.contrib.taggit import ClusterTaggableManager
 from taggit.models import TaggedItemBase
+from wagtail.core import blocks
 
 # Orderable adds sort_order to the images model to keep track of image order
 from wagtail.core.models import Page, Orderable
 from wagtail.core.fields import RichTextField
 from wagtail.admin.edit_handlers import (
-    FieldPanel, InlinePanel, MultiFieldPanel
+    FieldPanel, InlinePanel, MultiFieldPanel, StreamFieldPanel
 )
 from wagtail.images.edit_handlers import ImageChooserPanel
 from wagtail.search import index
 from wagtail.snippets.models import register_snippet
+from wagtail.core.fields import StreamField
+from wagtail.images.blocks import ImageChooserBlock
 
 
 class BlogIndexPage(Page):
@@ -26,8 +29,9 @@ class BlogIndexPage(Page):
 
     def get_context(self, request):
         '''
-        Overrides the default get_context() such that the context dictionary
-        includes published posts in reverse chronological order.
+        Overrides the default get_context() so that the context dictionary
+        includes published posts in reverse chronological order and pagination
+        is also included.
         '''
         all_posts = self.get_children().live().order_by('-first_published_at')
 
@@ -66,7 +70,11 @@ class BlogPageTag(TaggedItemBase):
 
 class BlogPage(Page):
     date = models.DateField('Post date')
-    body = RichTextField(blank=True)
+    body = StreamField([
+        ('heading', blocks.CharBlock(form_classname='full title')),
+        ('paragraph', blocks.RichTextBlock()),
+        ('image', ImageChooserBlock()),
+    ])
     tags = ClusterTaggableManager(through=BlogPageTag, blank=True)
     categories = ParentalManyToManyField('blog.BlogCategory', blank=True)
 
@@ -83,19 +91,21 @@ class BlogPage(Page):
             FieldPanel('tags'),
             FieldPanel('categories', widget=forms.CheckboxSelectMultiple),
         ], heading='Blog information'),
-        FieldPanel('body'),
-        InlinePanel('gallery_images', label='Gallery images'),
+        StreamFieldPanel('body'),
+        # InlinePanel('gallery_images', label='Gallery images'),
     ]
 
-    def main_image(self):
-        '''
-        Returns the first image for a given blog page.
-        '''
-        gallery_item = self.gallery_images.first()
+    def first_image(self):
+        for block in self.body:
+            if block.block_type == 'image':
+                return block.value
+
+    '''def main_image(self):
+        gallery_item = self.body.image.first()
         if gallery_item:
             return gallery_item.image
         else:
-            return None
+            return None'''
 
 
 class BlogPageGalleryImage(Orderable):

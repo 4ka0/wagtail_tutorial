@@ -8,7 +8,7 @@
 
     <div class="row d-flex justify-content-center mb-5">
 
-        <div class="col-8">
+        <div class="col-10">
 
             <!-- Page description -->
 
@@ -29,22 +29,21 @@
 
                         <div class="row mb-4">
 
-                            <div class="col-3 pl-5">
-                                {% if post.main_image %}
-                                    <a href="{% pageurl post %}">{% image post.main_image fill-100x100 class="blog-list-image border" %}</a>
+                            <div class="col-4 pl-5">
+
+                                {% if post.first_image %}
+                                    <a href="{% pageurl post %}">{% image post.first_image fill-100x100 class="blog-list-image border" %}</a>
                                 {% endif %}
+
                             </div>
 
-                            <div class="col">
-
-                                <h4><a href="{% pageurl post %}">{{ post.title }}</a></h4>
-
-                                <div class="text-muted"><small>{{ post.date }}</small></div>
-
-                                {% with body=post.body|richtext %}
-                                    {{ body|truncatechars:95 }}
-                                {% endwith %}
-
+                            <div class="col pt-3">
+                                <div class="py-1">
+                                    <h4 class="pb-1">
+                                        <a href="{% pageurl post %}">{{ post.title }}</a>
+                                    </h4>
+                                </div>
+                                <div class="text-muted">{{ post.date }}</div>
                             </div>
 
                         </div>
