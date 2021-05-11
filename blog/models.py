@@ -11,7 +11,7 @@ from wagtail.core import blocks
 from wagtail.core.models import Page, Orderable
 from wagtail.core.fields import RichTextField
 from wagtail.admin.edit_handlers import (
-    FieldPanel, InlinePanel, MultiFieldPanel, StreamFieldPanel
+    FieldPanel, MultiFieldPanel, StreamFieldPanel
 )
 from wagtail.images.edit_handlers import ImageChooserPanel
 from wagtail.search import index
@@ -92,20 +92,16 @@ class BlogPage(Page):
             FieldPanel('categories', widget=forms.CheckboxSelectMultiple),
         ], heading='Blog information'),
         StreamFieldPanel('body'),
-        # InlinePanel('gallery_images', label='Gallery images'),
     ]
 
     def first_image(self):
+        '''
+        Returns the first image from the body StreamField.
+        Used for the blog post index page.
+        '''
         for block in self.body:
             if block.block_type == 'image':
                 return block.value
-
-    '''def main_image(self):
-        gallery_item = self.body.image.first()
-        if gallery_item:
-            return gallery_item.image
-        else:
-            return None'''
 
 
 class BlogPageGalleryImage(Orderable):
