@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% load wagtailcore_tags wagtailimages_tags %}
+
+{% block body_class %}template-blogpage{% endblock %}
+
+{% block content %}
+
+    <div class="row d-flex justify-content-center pb-5">
+        <div class="col">
+
+            <!-- Page meta  -->
+
+            <div class="div text-center pb-3">
+                <h3 class="pb-3">{{ page.title }}</h3>
+                <p class="text-muted">{{ page.date }}</p>
+            </div>
+
+            <!-- Page text  -->
+
+            <div class="lh-lg pb-3 text-justify">
+
+                {% for block in page.body %}
+
+                    {% if block.block_type == 'heading' %}
+                        <h5>{{ block.value }}</h5>
+                    {% endif %}
+
+                    {% if block.block_type == 'paragraph' %}
+                        <p>{{ block.value|richtext }}</p>
+                    {% endif %}
+
+                    {% if block.block_type == 'image' %}
+                        {% image block.value width-400 class="blog-page-image border mb-4" %}
+                    {% endif %}
+
+                {% endfor %}
+
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
