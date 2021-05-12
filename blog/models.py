@@ -29,15 +29,19 @@ class BlogIndexPage(Page):
 
     def get_context(self, request):
         '''
-        Overrides the default get_context() so that the context dictionary
-        includes published posts in reverse chronological order and pagination
-        is also included.
+        Overrides the default get_context() so that:
+        - the context includes published posts in reverse chronological order
+        - the context includes a list off all current tags
+        - the results are paginated
         '''
+        context = super().get_context(request)
+
         all_posts = self.get_children().live().order_by('-first_published_at')
+
+        context['tags'] = self.get_child_tags()
 
         paginator = Paginator(all_posts, 5)
         page = request.GET.get('page')
-
         try:
             # If the page exists and the page=x is an int
             posts = paginator.page(page)
@@ -47,10 +51,20 @@ class BlogIndexPage(Page):
         except EmptyPage:
             # If page=x is out of range: return the last page
             posts = paginator.page(paginator.num_pages)
-
-        context = super().get_context(request)
         context['posts'] = posts
+
         return context
+
+    def get_child_tags(self):
+        '''
+        Gets a list of tags for all blog posts.
+        '''
+        tags = []
+        blog_pages = BlogPage.objects.live().descendant_of(self)
+        for page in blog_pages:
+            tags += page.get_tags()
+        tags = sorted(set(tags))
+        return tags
 
 
 class BlogPageTag(TaggedItemBase):
@@ -103,6 +117,22 @@ class BlogPage(Page):
             if block.block_type == 'image':
                 return block.value
 
+    def get_tags(self):
+        '''
+        Returns all tags that are related to a given blog page into a list we
+        can access on the template. Additionally adds a URL to access BlogPage
+        objects with that tag. Taken from the Wagtail bakery demo.
+        https://github.com/wagtail/bakerydemo/blob/4469a5a182f3c34db520979bd257a9a5cc4620fa/bakerydemo/blog/models.py#L110
+        '''
+        tags = self.tags.all()
+        for tag in tags:
+            tag.url = '/' + '/'.join(s.strip('/') for s in [
+                self.get_parent().url,
+                'tags',
+                tag.slug
+            ])
+        return tags
+
 
 class BlogPageGalleryImage(Orderable):
     page = ParentalKey(
@@ -133,7 +163,8 @@ class BlogTagIndexPage(Page):
 
     def get_context(self, request):
         tag = request.GET.get('tag')
-        posts = BlogPage.objects.live().filter(tags__name=tag).order_by('-first_published_at')
+        posts = BlogPage.objects.live().filter(tags__name=tag) \
+            .order_by('-first_published_at')
         context = super().get_context(request)
         context['posts'] = posts
         return context

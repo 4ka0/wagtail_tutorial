@@ -26,11 +26,10 @@ a:link {
 }
 
 .blog-list-image {
-    display: block;
+    /* display: block; */
     border-radius: 10%;
-    margin: auto;
-    margin-top: 6px;
-    margin-left: 140px;
+    /* margin: auto; */
+    margin-left: 40px;
 }
 
 .blog-page-image-block {
