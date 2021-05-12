@@ -2,12 +2,7 @@ from django import forms
 from django.db import models
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 
-from modelcluster.fields import ParentalKey, ParentalManyToManyField
-from modelcluster.contrib.taggit import ClusterTaggableManager
-from taggit.models import TaggedItemBase
 from wagtail.core import blocks
-
-# Orderable adds sort_order to the images model to keep track of image order
 from wagtail.core.models import Page, Orderable
 from wagtail.core.fields import RichTextField
 from wagtail.admin.edit_handlers import (
@@ -19,6 +14,10 @@ from wagtail.snippets.models import register_snippet
 from wagtail.core.fields import StreamField
 from wagtail.images.blocks import ImageChooserBlock
 
+from modelcluster.fields import ParentalKey, ParentalManyToManyField
+from modelcluster.contrib.taggit import ClusterTaggableManager
+from taggit.models import TaggedItemBase
+
 
 class BlogIndexPage(Page):
     intro = RichTextField(blank=True)
@@ -27,18 +26,29 @@ class BlogIndexPage(Page):
         FieldPanel('intro', classname='full')
     ]
 
+    def get_all_tags():
+        '''
+        Returns a list of all tags associated with all live blog posts.
+        '''
+        tags = []
+        blog_pages = BlogPage.objects.live()
+        for page in blog_pages:
+            tags += page.get_post_tags()
+        tags = sorted(set(tags))
+        return tags
+
     def get_context(self, request):
         '''
         Overrides the default get_context() so that:
-        - the context includes published posts in reverse chronological order
-        - the context includes a list off all current tags
+        - the context includes published posts in reverse chronological order,
+        - the context includes a list of all current tags, and
         - the results are paginated
         '''
         context = super().get_context(request)
 
         all_posts = self.get_children().live().order_by('-first_published_at')
 
-        context['tags'] = self.get_child_tags()
+        context['tags'] = BlogIndexPage.get_all_tags()
 
         paginator = Paginator(all_posts, 5)
         page = request.GET.get('page')
@@ -55,24 +65,13 @@ class BlogIndexPage(Page):
 
         return context
 
-    def get_child_tags(self):
-        '''
-        Gets a list of tags for all blog posts.
-        '''
-        tags = []
-        blog_pages = BlogPage.objects.live().descendant_of(self)
-        for page in blog_pages:
-            tags += page.get_tags()
-        tags = sorted(set(tags))
-        return tags
-
 
 class BlogPageTag(TaggedItemBase):
     '''
-    Model for tags that can be attached to a blog entry.
-    Has to be defined prior to the BlogPage model.
+    Model for tags that can be attached to blog posts.
     '''
 
+    # This class has to be defined prior to the BlogPage model.
     # ParentalKey is similar to ForeignKey in that it attaches this model to
     # a parent model, but it also explicitly defines this model as being
     # a child of BlogPage so that it is treated as a basic part of a page
@@ -108,7 +107,7 @@ class BlogPage(Page):
         StreamFieldPanel('body'),
     ]
 
-    def first_image(self):
+    def get_first_image(self):
         '''
         Returns the first image from the body StreamField.
         Used for the blog post index page.
@@ -117,11 +116,13 @@ class BlogPage(Page):
             if block.block_type == 'image':
                 return block.value
 
-    def get_tags(self):
+    def get_post_tags(self):
         '''
-        Returns all tags that are related to a given blog page into a list we
-        can access on the template. Additionally adds a URL to access BlogPage
-        objects with that tag. Taken from the Wagtail bakery demo.
+        Returns all tags that are related to the blog post in question as a
+        list that can be accessed in the template.
+        Additionally, a URL is added so that the relevant post can be accessed
+        with the tag in question.
+        (Taken from the Wagtail bakery demo:)
         https://github.com/wagtail/bakerydemo/blob/4469a5a182f3c34db520979bd257a9a5cc4620fa/bakerydemo/blog/models.py#L110
         '''
         tags = self.tags.all()
@@ -135,11 +136,14 @@ class BlogPage(Page):
 
 
 class BlogPageGalleryImage(Orderable):
+
+    # Sub-classing Orderable makes it possible to keep track of the image order
+
     page = ParentalKey(
         BlogPage, on_delete=models.CASCADE, related_name='gallery_images'
     )
 
-    # image is a ForeignKey to Wagtail’s built-in Image model, where the
+    # 'image' is a ForeignKey to Wagtail’s built-in Image model, where the
     # images themselves are stored. This comes with a dedicated panel type,
     # ImageChooserPanel, which provides a pop-up interface for choosing an
     # existing image or uploading a new one. This way, we allow an image to
@@ -160,13 +164,23 @@ class BlogPageGalleryImage(Orderable):
 
 
 class BlogTagIndexPage(Page):
+    '''
+    Overrides the default get_context() so that:
+    - the context includes only posts associated with a given tag, and
+    - the context includes a list of all current tags.
+    '''
 
     def get_context(self, request):
+        context = super().get_context(request)
+
         tag = request.GET.get('tag')
         posts = BlogPage.objects.live().filter(tags__name=tag) \
             .order_by('-first_published_at')
-        context = super().get_context(request)
         context['posts'] = posts
+
+        tags = BlogIndexPage.get_all_tags()
+        context['tags'] = tags
+
         return context
 
 
