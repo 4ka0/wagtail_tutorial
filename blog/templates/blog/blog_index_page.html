@@ -29,14 +29,16 @@
 
                         <div class="row mb-4">
 
+                            <!-- Post image -->
                             <div class="col-4 pl-5">
-
                                 {% if post.first_image %}
-                                    <a href="{% pageurl post %}">{% image post.first_image fill-100x100 class="blog-list-image border" %}</a>
+                                    <a href="{% pageurl post %}">
+                                        {% image post.first_image fill-100x100 class="blog-list-image border" %}
+                                    </a>
                                 {% endif %}
-
                             </div>
 
+                            <!-- Post title and date -->
                             <div class="col pt-3">
                                 <div class="py-1">
                                     <h4 class="pb-1">
