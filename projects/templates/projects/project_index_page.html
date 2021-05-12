@@ -21,7 +21,7 @@
 
 <!-- Project listing block -->
 
-<div class="row mb-4">
+<div class="row mb-5">
 
     <div class="col">
 
@@ -29,7 +29,7 @@
             {% with project=project.specific %}
 
                 <div class="card bg-light pt-3 px-3 mb-3">
-                    <h4><a href="{% pageurl project %}">{{ project.title }}</a></h4>
+                    <h5><a href="{% pageurl project %}">{{ project.title }}</a></h5>
                     <p>{{ project.intro }}</p>
                 </div>
 
