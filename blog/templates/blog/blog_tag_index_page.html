@@ -4,62 +4,56 @@
 
 {% block content %}
 
-<div class="row d-flex justify-content-center mb-5">
+{% if request.GET.tag|length %}
+    <h3 class="text-center text-muted pb-5">Posts tagged "{{ request.GET.tag|capfirst }}"</h3>
+{% endif %}
+
+<div class="row mb-4">
+
+    <!-- Post listing -->
 
     <div class="col-10">
 
-        {% if request.GET.tag|length %}
-            <h3 class="text-center text-muted pb-5">Posts tagged "{{ request.GET.tag|capfirst }}"</h3>
-        {% endif %}
+        {% for post in posts %}
+            {% with post=post.specific %}
 
-        <!-- Post and tag listing block -->
+                <div class="row my-4">
 
-        <div class="row mb-4">
+                    <!-- Post image -->
 
-            <!-- Post listing -->
-            <div class="col-10">
+                    <div class="col-3">
+                        {% if post.get_first_image %}
+                            <a href="{% pageurl post %}">
+                                {% image post.get_first_image fill-100x100 class="blog-list-image border" %}
+                            </a>
+                        {% endif %}
+                    </div>
 
-                {% for post in posts %}
-                    {% with post=post.specific %}
+                    <!-- Post title and date -->
 
-                        <div class="row my-4">
+                    <div class="col align-self-center">
+                        <h4>
+                            <a href="{% pageurl post %}">{{ post.title }}</a>
+                        </h4>
+                        <div class="text-muted pt-1">{{ post.date }}</div>
+                    </div>
 
-                            <!-- Post image -->
-                            <div class="col-3">
-                                {% if post.get_first_image %}
-                                    <a href="{% pageurl post %}">
-                                        {% image post.get_first_image fill-100x100 class="blog-list-image border" %}
-                                    </a>
-                                {% endif %}
-                            </div>
+                </div>
 
-                            <!-- Post title and date -->
-                            <div class="col align-self-center">
-                                <h4>
-                                    <a href="{% pageurl post %}">{{ post.title }}</a>
-                                </h4>
-                                <div class="text-muted pt-1">{{ post.date }}</div>
-                            </div>
+            {% endwith %}
+        {% endfor %}
 
-                        </div>
+    </div>
 
-                    {% endwith %}
-                {% endfor %}
+    <!-- Tag listing -->
 
-            </div>
-
-            <!-- Tag listing -->
-            <div class="col-2 text-center pt-4">
-                <h5 class="text-muted">Tags</h5>
-                {% for tag in tags %}
-                    <a href="{% slugurl 'tags' %}?tag={{ tag }}">
-                        <span class="badge rounded-pill mt-2 bg-primary">{{ tag|capfirst }}</span>
-                    </a>
-                {% endfor %}
-            </div>
-
-        </div>
-
+    <div class="col-2 text-center pt-4">
+        <h5 class="text-muted">Tags</h5>
+        {% for tag in tags %}
+            <a href="{% slugurl 'tags' %}?tag={{ tag }}">
+                <span class="badge rounded-pill mt-2 bg-primary">{{ tag|capfirst }}</span>
+            </a>
+        {% endfor %}
     </div>
 
 </div>
