@@ -37,9 +37,7 @@
                         Tags:
                         {% for tag in page.tags.all %}
                             <a href="{% slugurl 'tags' %}?tag={{ tag }}">
-                                <button type="button" class="btn btn-outline-primary btn-sm">
-                                    {{ tag|capfirst }}
-                                </button>
+                                <span class="badge rounded-pill mt-2 bg-primary">{{ tag|capfirst }}</span>
                             </a>
                         {% endfor %}
                     </p>

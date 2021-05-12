@@ -9,36 +9,56 @@
     <div class="col-10">
 
         {% if request.GET.tag|length %}
-            <h3 class="text-center pb-5">Posts tagged "{{ request.GET.tag|capfirst }}"</h3>
+            <h3 class="text-center text-muted pb-5">Posts tagged "{{ request.GET.tag|capfirst }}"</h3>
         {% endif %}
 
-        <!-- Post listing -->
+        <!-- Post and tag listing block -->
 
-        {% for post in posts %}
+        <div class="row mb-4">
 
-            <div class="row mb-4">
+            <!-- Post listing -->
+            <div class="col-10">
 
-                <div class="col-4 pl-5">
-                    {% if post.first_image %}
-                        <a href="{% pageurl post %}">
-                            {% image post.first_image fill-100x100 class="blog-list-image" %}
-                        </a>
-                    {% endif %}
-                </div>
+                {% for post in posts %}
+                    {% with post=post.specific %}
 
-                <!-- Post title and date -->
-                <div class="col pt-3">
-                    <div class="py-1">
-                        <h4 class="pb-1">
-                            <a href="{% pageurl post %}">{{ post.title }}</a>
-                        </h4>
-                    </div>
-                    <div class="text-muted">{{ post.date }}</div>
-                </div>
+                        <div class="row my-4">
+
+                            <!-- Post image -->
+                            <div class="col-3">
+                                {% if post.first_image %}
+                                    <a href="{% pageurl post %}">
+                                        {% image post.first_image fill-100x100 class="blog-list-image border" %}
+                                    </a>
+                                {% endif %}
+                            </div>
+
+                            <!-- Post title and date -->
+                            <div class="col align-self-center">
+                                <h4>
+                                    <a href="{% pageurl post %}">{{ post.title }}</a>
+                                </h4>
+                                <div class="text-muted pt-1">{{ post.date }}</div>
+                            </div>
+
+                        </div>
+
+                    {% endwith %}
+                {% endfor %}
 
             </div>
 
-        {% endfor %}
+            <!-- Tag listing -->
+            <div class="col-2 text-center pt-4">
+                <h5 class="text-muted">Tags</h5>
+                {% for tag in tags %}
+                    <a href="{% slugurl 'tags' %}?tag={{ tag }}">
+                        <span class="badge rounded-pill mt-2 bg-primary">{{ tag|capfirst }}</span>
+                    </a>
+                {% endfor %}
+            </div>
+
+        </div>
 
     </div>
 
